@@ -24,34 +24,30 @@ end
 
 # :nodoc:
 class Route
-  attr_reader :course
+  attr_reader :stations
 
   def initialize(departure, destination)
-    @course = [departure, destination]
+    @stations = [departure, destination]
   end
 
   def departure
-    @course[0]
+    @stations[0]
   end
 
   def destination
-    @course[-1]
-  end
-
-  def intermediate
-    @course[1..-2]
+    @stations[-1]
   end
 
   def add_intermediate(station)
-    @course.insert(-2, station)
+    @stations.insert(-2, station)
   end
 
   def remove_intermediate(station)
-    @course.delete(station) if @course[1..-2].delete(station)
+    @stations.delete(station) unless [destination, departure].include? station
   end
 
   def list_route
-    @course.each { |station| print(station) }
+    @stations.each { |station| print(station) }
   end
 end
 
@@ -75,46 +71,46 @@ class Train
   end
 
   def couple
-    @car_quantity += 1 unless @speed.zero?
+    @car_quantity += 1 if @speed.zero?
   end
 
   def decouple
-    @car_quantity -= 1 unless @speed.zero?
+    @car_quantity -= 1 if @speed.zero? && !@car_quantity.zero?
   end
 
   def assign_route(route)
     @route = route
     @current_station_id = 0
-    @route.course[@current_station_id].host(self)
+    current.host(self)
   end
 
   # move to the next station
   def forwards
-    return if @current_station_id == @route.course.length - 1
+    return if current == route.destination
 
-    @route.course[@current_station_id].depart(self)
+    current.depart(self)
     @current_station_id += 1
-    @route.course[@current_station_id].host(self)
+    current.host(self)
   end
 
   # move to the previous station
   def backwards
-    return if @current_station_id.zero?
+    return if current == route.departure
 
-    @route.course[@current_station_id].depart(self)
+    current.depart(self)
     @current_station_id -= 1
-    @route.course[@current_station_id].host(self)
+    current.host(self)
   end
 
   def current
-    @route.course[@current_station_id]
+    @route.stations[@current_station_id]
   end
 
   def previous
-    @route.course[@current_station_id - 1] unless @current_station_id.zero?
+    @route.stations[@current_station_id - 1] unless current == @route.departure
   end
 
   def next
-    @route.course[@current_station_id + 1] unless @current_station_id == @route.route.length
+    @route.stations[@current_station_id + 1] unless current == @route.destination
   end
 end
