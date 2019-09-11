@@ -19,23 +19,17 @@ class Train
   end
 
   def couple!(car)
-    @cars << car if car.coupled! self
+    return if car.nil?
+
+    @cars << car
+    car.coupled!(self)
   end
 
   def decouple!(car)
+    return if car.nil?
+
     @cars.delete(car)
-  end
-
-  def current
-    @route.stations[@current_station_id]
-  end
-
-  def previous
-    @route.stations[@current_station_id - 1] unless current == @route.departure
-  end
-
-  def next
-    @route.stations[@current_station_id + 1] unless current == @route.destination
+    car.decoupled!
   end
 
   def assign_route!(route)
@@ -45,7 +39,7 @@ class Train
   end
 
   def forwards!
-    return if current == route.destination
+    return if route.nil? || current == route.destination
 
     current.depart!(self)
     @current_station_id += 1
@@ -53,10 +47,22 @@ class Train
   end
 
   def backwards!
-    return if current == route.departure
+    return if route.nil? || current == route.departure
 
     current.depart!(self)
     @current_station_id -= 1
     current.host!(self)
+  end
+
+  def current
+    @route.stations[@current_station_id] unless @route.nil?
+  end
+
+  def previous
+    @route.stations[@current_station_id - 1] unless @route.nil? || current == @route.departure
+  end
+
+  def next
+    @route.stations[@current_station_id + 1] unless @route.nil? || current == @route.destination
   end
 end

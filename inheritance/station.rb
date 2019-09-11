@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# :nodoc:
 class Station
   attr_reader :trains, :name
 
@@ -9,14 +10,23 @@ class Station
   end
 
   def list_specififc(type)
-    @trains.select { |train| train.type == type }
+    case type
+    when 'passenger'
+      @trains.select { |train| train.instance_of? PassengerTrain }
+    when 'cargo'
+      @train.select { |train| train.instance_of? CargoTrain }
+    end
   end
 
   def host!(train)
-    @trains << train
+    return if train.nil?
+
+    @trains << train if train.current == self
   end
 
   def depart!(train)
-    @trains.delete(train)
+    return if train.nil?
+
+    @trains.delete(train) if train.current == self
   end
 end

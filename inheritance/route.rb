@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# :nodoc:
 class Route
   attr_reader :stations
 
@@ -16,14 +17,18 @@ class Route
   end
 
   def add_intermediate!(station)
-    @stations.insert(-2, station)
+    return if station.nil?
+
+    @stations.insert(-2, station) unless @stations.include? station
   end
 
   def remove_intermediate!(station)
+    return if station.nil?
+
     @stations.delete(station) unless [destination, departure].include? station
   end
 
   def list_route
-    @stations.each_with_index { |station, id| puts 'Station ID ' + id.to_s + ' ' + station.name }
+    @stations.each_with_index { |station, id| puts '  Station ID: ' + id.to_s + ' Station name: ' + station.name }
   end
 end
