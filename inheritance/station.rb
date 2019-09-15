@@ -9,7 +9,7 @@ class Station
     @trains = []
   end
 
-  def list_specififc(type)
+  def list_specific(type)
     case type
     when 'passenger'
       @trains.select { |train| train.instance_of? PassengerTrain }

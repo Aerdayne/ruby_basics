@@ -17,7 +17,7 @@ class Station
     @trains.delete(train) if train.current == self
   end
 
-  def list_specififc(type)
+  def list_specific(type)
     @trains.select { |train| train.type == type }
   end
 end

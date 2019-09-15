@@ -15,14 +15,15 @@ class Train
     @id = id
     @speed = 0
     @cars = []
-    @@trains << self
+    (@@trains[@id] ||= []) << self
   end
 
-  @@trains = []
+  @@trains = {}
 
-  # Since IDs aren't unique returns the first matching instance
   def self.find(id)
-    @@trains.detect { |train| train.id == id }
+    return @@trains[id] if @@trains[id][1]
+
+    @@trains[id][0]
   end
 
   def increase_speed!(value)
