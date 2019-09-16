@@ -2,7 +2,6 @@
 
 require_relative '../modules/instancecounter.rb'
 require_relative '../modules/validation.rb'
-require_relative '../exceptions/argumenttypeerror.rb'
 
 # :nodoc:
 class Route
@@ -26,12 +25,14 @@ class Route
   end
 
   def add_intermediate!(station)
-    validate! :add_intermediate!, station
+    return if station.instance_of? Station
+
     @stations.insert(-2, station)
   end
 
   def remove_intermediate!(station)
-    validate! :remove_intermediate!, station
+    return if station.instance_of? Station
+
     @stations.delete(station)
   end
 
@@ -41,19 +42,8 @@ class Route
 
   protected
 
-  def validate!(*args)
-    # Route#Initialize validation
-    raise ArgumentTypeError unless @stations.all? { |station| station.instance_of? Station}
-
-    unless args.nil?
-      case args[0]
-      when :add_intermediate!
-        raise ArgumentTypeError unless args[1].instance_of? Station
-        raise DuplicateObjectError if @stations.include? args[1]
-      when :remove_intermediate!
-        raise ArgumentTypeError unless args[1].instance_of?(Station) && @stations.include?(args[1])
-        raise ObjectIntegrityError if [destination, departure].include? args[1]
-      end
-    end
+  def validate!
+    raise CustomException, 'Route should consist of stations' unless @stations.all? { |station| station.instance_of? Station}
+    raise CustomException, 'Route departure and destination can not be the same' if @stations[0] == @stations[-1]
   end
 end

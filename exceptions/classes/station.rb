@@ -2,10 +2,7 @@
 
 require_relative '../modules/instancecounter.rb'
 require_relative '../modules/validation.rb'
-require_relative '../exceptions/argumenttypeerror.rb'
-require_relative '../exceptions/traintypeerror.rb'
-require_relative '../exceptions/duplicateobjecterror.rb'
-require_relative '../exceptions/objectintegrityerror.rb'
+
 # :nodoc:
 class Station
   attr_reader :trains, :name
@@ -17,8 +14,8 @@ class Station
   def initialize(name)
     @name = name
     @trains = []
-    @@stations << self
     validate!
+    @@stations << self
   end
 
   @@stations = []
@@ -28,41 +25,30 @@ class Station
   end
 
   def list_specific(type)
-    validate! :list_specific, type
     case type
     when 'passenger'
       @trains.select { |train| train.instance_of? PassengerTrain }
     when 'cargo'
-      @trains.select { |train| train.instance_of? CargoTrain }
+      @train.select { |train| train.instance_of? CargoTrain }
     end
   end
 
   def host!(train)
-    validate! :host!, train
-    @trains << train
+    return unless train&.is_a?(Train)
+
+    @trains << train if train.current == self
   end
 
   def depart!(train)
-    validate! :depart!, train
-    @trains.delete train
+    return unless train&.is_a?(Train)
+
+    @trains.delete(train) if train.current == self
   end
 
   protected
 
-  def validate!(*args)
-    # Station#Initialize validation
-    raise ArgumentTypeError unless @name.instance_of?(String)
-
-    # Method validation
-    unless args.empty?
-      case args[0]
-      when :host!, :depart!
-        raise ArgumentTypeError unless args[1].is_a?(Train)
-        raise ObjectIntegrityError unless args[1].current == self
-        raise DuplicateObjectError if @trains.include? args[1]
-      when :list_specific
-        raise TrainTypeError unless Train.train_types.include?(args[1])
-      end
-    end
+  def validate!
+    raise CustomException, 'Name should be a string' unless @name.instance_of? String
+    raise CustomException, 'Name should be at least 3 symbols long' if @name.length < 3
   end
 end

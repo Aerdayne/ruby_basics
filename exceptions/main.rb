@@ -12,6 +12,7 @@ require_relative 'interface/creator.rb'
 require_relative 'interface/interaction.rb'
 require_relative 'modules/manufacturer.rb'
 require_relative 'modules/instancecounter.rb'
+require_relative 'exceptions/customexception.rb'
 
 master = Creator.new
 main = Interaction.new(master)

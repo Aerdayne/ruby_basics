@@ -9,8 +9,8 @@ class Creator
   end
 
   def create_station!(name)
-    @stations << Station.new(name.to_str)
-  rescue StandardError => e
+    @stations << Station.new(name)
+  rescue CustomException => e
     puts e.message
   end
 
@@ -23,7 +23,7 @@ class Creator
     else
       puts 'Invalid train type'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -34,7 +34,7 @@ class Creator
     else
       puts 'Invalid IDs or specified stations are the same one'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -45,7 +45,7 @@ class Creator
     else
       puts 'Invalid IDs or the specified station is already a part of route'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -56,7 +56,7 @@ class Creator
     else
       puts 'Invalid IDs or the specified station is an end-station'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -69,7 +69,7 @@ class Creator
     else
       puts 'Invalid ID'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -80,7 +80,7 @@ class Creator
     else
       puts 'Invalid ID'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -91,7 +91,7 @@ class Creator
     else
       puts 'Invalid train ID or route ID'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -108,7 +108,7 @@ class Creator
     else
       puts 'Invalid ID'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -123,7 +123,7 @@ class Creator
         puts '    None'
       end
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -133,7 +133,7 @@ class Creator
       puts 'Route ID: ' + id.to_s
       route.list_route
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 
@@ -151,7 +151,7 @@ class Creator
     else
       puts 'Invalid type'
     end
-  rescue StandardError => e
+  rescue CustomException => e
     puts e.message
   end
 

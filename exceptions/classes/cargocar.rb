@@ -2,9 +2,7 @@
 
 # :nodoc:
 class CargoCar < RailCar
-  protected
-  
-  def validate!(*args)
-    raise ArgumentTypeError unless args[0].instance_of? CargoTrain
+  def coupled!(train)
+    super if train.instance_of? CargoTrain
   end
 end

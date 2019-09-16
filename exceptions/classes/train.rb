@@ -3,80 +3,71 @@
 require_relative '../modules/manufacturer.rb'
 require_relative '../modules/instancecounter.rb'
 require_relative '../modules/validation.rb'
-require_relative '../exceptions/argumenttypeerror.rb'
-require_relative '../exceptions/unmatchingiderror.rb'
-require_relative '../exceptions/routeerror.rb'
+
 # :nodoc:
 class Train
   attr_reader :speed, :route, :cars, :id
 
   TRAIN_ID_REGEXP = /\A[a-zA-Z0-9]{3}[-]?[a-zA-Z0-9]{2}\z/.freeze
-  TRAIN_TYPES = %w[passenger cargo].freeze
-
-  @@trains = {}
 
   include Manufacturer
   include Validation
   extend InstanceCounter::ClassMethods
   prepend InstanceCounter::InstanceMethods
 
-  def self.train_types
-    const_get('TRAIN_TYPES')
-  end
-
-  def self.find(id)
-    return @@trains[id] if @@trains[id][1]
-
-    @@trains[id][0]
-  end
-
   def initialize(id)
     @id = id
     @speed = 0
     @cars = []
-    (@@trains[@id] ||= []) << self
     validate!
+    @@trains[@id] = self
+  end
+
+  @@trains = {}
+
+  def self.find(id)
+    @@trains[id]
   end
 
   def increase_speed!(value)
-    validate! :increase_speed!, value
-    @speed += value
+    @speed += value if value.is_a? Numeric
   end
 
   def decrease_speed!(value)
-    validate! :decrease_speed!, value
-    @speed -= value
+    @speed -= value if value.is_a?(Numeric) && value <= @speed
   end
 
   def couple!(car)
-    validate! :couple!, car
-    p self
-    car.coupled! self
-    @cars << car
+    return unless car.is_a? RailCar
+
+    @cars << car if car.coupled!(self)
   end
 
   def decouple!(car)
-    validate! :decouple!, car
-    car.decoupled!
-    @cars.delete(car)
+    return unless car.is_a? RailCar
+
+    @cars.delete(car) if car.decoupled!
   end
 
   def assign_route!(route)
-    validate! :assign_route!, route
+    return unless route.is_a? Route
+
     @route = route
     @current_station_id = 0
     current.host!(self)
   end
 
   def forwards!
-    validate! :forwards!
+    return if @route.nil? || current == route.destination
+
     current.depart!(self)
     @current_station_id += 1
     current.host!(self)
   end
 
   def backwards!
-    validate! :backwards!
+    return if @route.nil? || current == route.departure
+
     current.depart!(self)
     @current_station_id -= 1
     current.host!(self)
@@ -96,30 +87,8 @@ class Train
 
   protected
 
-  def validate!(*args)
-    # Train#Initialize validation
-    raise ArgumentTypeError unless @id.instance_of?(String)
-    raise UnmatchingIdError if @id !~ TRAIN_ID_REGEXP
-
-    # Method validation
-    unless args.nil?
-      case args[0]
-      when :increase_speed!
-        raise ArgumentTypeError unless args[1].is_a? Numeric
-      when :decrease_speed!
-        raise ArgumentTypeError unless args[1].is_a?(Numeric) && args[1] <= @speed && args[1].positive?
-      when :couple!
-        raise ArgumentTypeError unless args[1].is_a? RailCar
-        raise DuplicateObjectError if @cars.include? args[1]
-      when :decouple!
-        raise ArgumentTypeError unless args[1].is_a? RailCar
-      when :assign_route!
-        raise ArgumentTypeError unless args[1].is_a? Route
-      when :forwards!
-        raise RouteError unless route && current != route.destination
-      when :backwards!
-        raise RouteError unless route && current != route.departure
-      end
-    end
+  def validate!
+    raise CustomException, 'ID should be a string' unless @id.instance_of? String
+    raise CustomException, 'ID format should be XXX-XX or XXXXX' if @id !~ TRAIN_ID_REGEXP
   end
 end
