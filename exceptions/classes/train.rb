@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
-require_relative 'modules/manufacturer.rb'
-require_relative 'modules/instancecounter.rb'
+require_relative '../modules/manufacturer.rb'
+require_relative '../modules/instancecounter.rb'
+require_relative '../modules/validation.rb'
 
 # :nodoc:
 class Train
   attr_reader :speed, :route, :cars, :id
 
+  TRAIN_ID_REGEXP = /\A[a-zA-Z0-9]{3}[-]?[a-zA-Z0-9]{2}\z/.freeze
+
   include Manufacturer
+  include Validation
   extend InstanceCounter::ClassMethods
   prepend InstanceCounter::InstanceMethods
 
@@ -15,44 +19,46 @@ class Train
     @id = id
     @speed = 0
     @cars = []
-    @@trains << self
+    validate!
+    @@trains[@id] = self
   end
 
-  @@trains = []
+  @@trains = {}
 
-  # Since IDs aren't unique returns the first matching instance
   def self.find(id)
-    @@trains.detect { |train| train.id == id }
+    @@trains[id]
   end
 
   def increase_speed!(value)
-    @speed += value
+    @speed += value if value.is_a? Numeric
   end
 
   def decrease_speed!(value)
-    @speed -= value unless @speed < value
+    @speed -= value if value.is_a?(Numeric) && value <= @speed
   end
 
   def couple!(car)
-    return if car.nil?
+    return unless car.is_a? RailCar
 
     @cars << car if car.coupled!(self)
   end
 
   def decouple!(car)
-    return if car.nil?
+    return unless car.is_a? RailCar
 
     @cars.delete(car) if car.decoupled!
   end
 
   def assign_route!(route)
+    return unless route.is_a? Route
+
     @route = route
     @current_station_id = 0
     current.host!(self)
   end
 
   def forwards!
-    return if route.nil? || current == route.destination
+    return if @route.nil? || current == route.destination
 
     current.depart!(self)
     @current_station_id += 1
@@ -60,7 +66,7 @@ class Train
   end
 
   def backwards!
-    return if route.nil? || current == route.departure
+    return if @route.nil? || current == route.departure
 
     current.depart!(self)
     @current_station_id -= 1
@@ -77,5 +83,12 @@ class Train
 
   def next
     @route.stations[@current_station_id + 1] unless @route.nil? || current == @route.destination
+  end
+
+  protected
+
+  def validate!
+    raise CustomException, 'ID should be a string' unless @id.instance_of? String
+    raise CustomException, 'ID format should be XXX-XX or XXXXX' if @id !~ TRAIN_ID_REGEXP
   end
 end

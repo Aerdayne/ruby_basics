@@ -4,14 +4,15 @@
 class RailCar
   attr_reader :train
 
+  include Manufacturer
+
   def coupled!(train)
-    return if train.nil?
+    return if train.is_a? Train
 
     @train = train
   end
 
   def decoupled!
     @train = nil
-    true
   end
 end
