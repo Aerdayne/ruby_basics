@@ -10,8 +10,6 @@ class Creator
 
   def create_station!(name)
     @stations << Station.new(name)
-  rescue CustomException => e
-    puts e.message
   end
 
   def create_train!(type, id)
@@ -23,8 +21,6 @@ class Creator
     else
       puts 'Invalid train type'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes both station's indices from @stations
@@ -34,8 +30,6 @@ class Creator
     else
       puts 'Invalid IDs or specified stations are the same one'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes route's index from @routes array and station's index from @stations
@@ -45,8 +39,6 @@ class Creator
     else
       puts 'Invalid IDs or the specified station is already a part of route'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes route's index from @routes array and station's index from route.stations array
@@ -56,8 +48,6 @@ class Creator
     else
       puts 'Invalid IDs or the specified station is an end-station'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes train's index from @trains array
@@ -69,8 +59,6 @@ class Creator
     else
       puts 'Invalid ID'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes train's index from @trains array
@@ -80,8 +68,6 @@ class Creator
     else
       puts 'Invalid ID'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes train's index from @trains array and route's index from @routes array
@@ -91,25 +77,21 @@ class Creator
     else
       puts 'Invalid train ID or route ID'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   # Takes train's index from @trains array and direction parameter
   def move!(train_id, direction)
     if get_train(train_id)
       if direction == 'forwards'
-        get_train(train_id).forwards!
+        puts 'Route is not assigned or train is at the end-station' unless get_train(train_id).forwards!
       elsif direction == 'backwards'
-        get_train(train_id).backwards!
+        puts 'Route is not assigned or train is at the end-station' unless  get_train(train_id).backwards!
       else
         puts 'Invalid direction'
       end
     else
       puts 'Invalid ID'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   def list_stations
@@ -123,8 +105,6 @@ class Creator
         puts '    None'
       end
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   def list_routes
@@ -133,8 +113,6 @@ class Creator
       puts 'Route ID: ' + id.to_s
       route.list_route
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   def list_trains(type)

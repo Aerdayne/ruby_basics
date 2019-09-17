@@ -36,18 +36,23 @@ class Interaction
     puts 'To create a route, type '.ljust(40) + "'route'"
     puts 'To go back, type '.ljust(40) + "'back'\n\n"
     loop do
-      input = gets.chomp.split
-      case input[0]
-      when 'train'
-        puts 'Train created!' if @master.create_train!(input[1], input[2])
-      when 'station'
-        puts 'Station created!' if @master.create_station!(input[1])
-      when 'route'
-        puts 'Route created!' if create_route!
-      when 'back'
-        break
-      else
-        puts 'Invalid command!'
+      begin
+        input = gets.chomp.split
+        case input[0]
+        when 'train'
+          puts 'Train created!' if @master.create_train!(input[1], input[2])
+        when 'station'
+          puts 'Station created!' if @master.create_station!(input[1])
+        when 'route'
+          puts 'Route created!' if create_route!
+        when 'back'
+          break
+        else
+          puts 'Invalid command!'
+        end
+      rescue CustomException => e
+        puts e.message
+        retry
       end
     end
   end
@@ -112,11 +117,7 @@ class Interaction
           puts 'No cars to remove.'
         end
       when 'move'
-        if @master.move!(id, input[1])
-          puts 'Train moved ' + input[1] + '.'
-        else
-          puts 'Route is not set or end-station is reached'
-        end
+        puts 'Train moved ' + input[1] + '.' if @master.move!(id, input[1])
       when 'assign'
         puts 'Route assigned.' if @master.set_train_route!(id, input[1])
       when 'back'

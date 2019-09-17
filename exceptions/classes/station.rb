@@ -34,15 +34,17 @@ class Station
   end
 
   def host!(train)
-    return unless train&.is_a?(Train)
+    return unless train&.current == self
 
-    @trains << train if train.current == self
+    @trains << train
+    true
   end
 
   def depart!(train)
-    return unless train&.is_a?(Train)
+    return unless train&.current == self
 
-    @trains.delete(train) if train.current == self
+    @trains.delete(train)
+    true
   end
 
   protected
