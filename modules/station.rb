@@ -1,20 +1,16 @@
 # frozen_string_literal: true
 
-require_relative '../modules/instancecounter.rb'
-require_relative '../modules/validation.rb'
-
+require_relative 'modules/instancecounter.rb'
 # :nodoc:
 class Station
   attr_reader :trains, :name
 
-  include Validation
   extend InstanceCounter::ClassMethods
   prepend InstanceCounter::InstanceMethods
 
   def initialize(name)
     @name = name
     @trains = []
-    validate!
     @@stations << self
   end
 
@@ -24,7 +20,7 @@ class Station
     @@stations
   end
 
-  def list_specific(type)
+  def list_specififc(type)
     case type
     when 'passenger'
       @trains.select { |train| train.instance_of? PassengerTrain }
@@ -34,23 +30,14 @@ class Station
   end
 
   def host!(train)
-    return unless train&.current == self
+    return if train.nil?
 
-    @trains << train
-    true
+    @trains << train if train.current == self
   end
 
   def depart!(train)
-    return unless train&.current == self
+    return if train.nil?
 
-    @trains.delete(train)
-    true
-  end
-
-  protected
-
-  def validate!
-    raise CustomException, 'Name should be a string' unless @name.instance_of? String
-    raise CustomException, 'Name should be at least 3 symbols long' if @name.length < 3
+    @trains.delete(train) if train.current == self
   end
 end

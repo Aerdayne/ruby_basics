@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # Text interface class
 class Interaction
   def initialize(creator)
@@ -31,28 +29,23 @@ class Interaction
   protected
 
   def create
-    puts "\n" + 'To create a train, type '.ljust(40) + "'train <type> <id>', types are: cargo, passenger, ID example: XXX-XX or XXXXX"
+    puts "\n" + 'To create a train, type '.ljust(40) + "'train <type>', types are: cargo, passenger"
     puts 'To create a station, type '.ljust(40) + "'station <name>'"
     puts 'To create a route, type '.ljust(40) + "'route'"
     puts 'To go back, type '.ljust(40) + "'back'\n\n"
     loop do
-      begin
-        input = gets.chomp.split
-        case input[0]
-        when 'train'
-          puts 'Train created!' if @master.create_train!(input[1], input[2])
-        when 'station'
-          puts 'Station created!' if @master.create_station!(input[1])
-        when 'route'
-          puts 'Route created!' if create_route!
-        when 'back'
-          break
-        else
-          puts 'Invalid command!'
-        end
-      rescue CustomException => e
-        puts e.message
-        retry
+      input = gets.chomp.split
+      case input[0]
+      when 'train'
+        puts 'Train created!' if @master.create_train!(input[1])
+      when 'station'
+        puts 'Station created!' if @master.create_station!(input[1])
+      when 'route'
+        puts 'Route created!' if create_route!
+      when 'back'
+        break
+      else
+        puts 'Invalid command!'
       end
     end
   end
@@ -114,10 +107,14 @@ class Interaction
         if @master.remove_car!(id)
           puts 'Removed a car.'
         else
-          puts 'No cars to remove.'
+          puts 'No cars left.'
         end
       when 'move'
-        puts 'Train moved ' + input[1] + '.' if @master.move!(id, input[1])
+        if @master.move!(id, input[1])
+          puts 'Train moved ' + input[1] + '.'
+        else
+          puts 'Route is not set or end-station is reached'
+        end
       when 'assign'
         puts 'Route assigned.' if @master.set_train_route!(id, input[1])
       when 'back'

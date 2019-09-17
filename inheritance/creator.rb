@@ -9,15 +9,19 @@ class Creator
   end
 
   def create_station!(name)
-    @stations << Station.new(name)
+    if name
+      @stations << Station.new(name.to_str)
+    else
+      puts 'Name is invalid'
+    end
   end
 
-  def create_train!(type, id)
+  def create_train!(type)
     case type
     when 'passenger'
-      @trains << PassengerTrain.new(id)
+      @trains << PassengerTrain.new(@trains.length)
     when 'cargo'
-      @trains << CargoTrain.new(id)
+      @trains << CargoTrain.new(@trains.length)
     else
       puts 'Invalid train type'
     end
@@ -83,9 +87,9 @@ class Creator
   def move!(train_id, direction)
     if get_train(train_id)
       if direction == 'forwards'
-        puts 'Route is not assigned or train is at the end-station' unless get_train(train_id).forwards!
+        get_train(train_id).forwards!
       elsif direction == 'backwards'
-        puts 'Route is not assigned or train is at the end-station' unless  get_train(train_id).backwards!
+        get_train(train_id).backwards!
       else
         puts 'Invalid direction'
       end
@@ -129,8 +133,6 @@ class Creator
     else
       puts 'Invalid type'
     end
-  rescue CustomException => e
-    puts e.message
   end
 
   def get_station(id)

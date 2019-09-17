@@ -22,4 +22,11 @@ module InstanceCounter
       self.class.instances += 1
     end
   end
+
+  # Prepend hook to overrtide Class#Initialize
+  def self.prepended(base)
+    class << base
+      include InstanceMethods
+    end
+  end
 end
