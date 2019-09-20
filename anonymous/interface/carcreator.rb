@@ -26,9 +26,13 @@ class CarCreator < Creator
 
   def load_car
     car = select_object(@cars, 'car', &@creator.output[:car])
-    puts 'Enter the volume to be occupied:'
-    input = gets.chomp
-    car.load!(input.to_i)
+    if car.instance_of? PassengerCar
+      input = nil
+    else
+      puts 'Enter the volume to be occupied:'
+      input = gets.chomp.to_i
+    end
+    raise CustomException, 'Volume is all used!' unless car.load!(*input)
   end
 
   def list_cars

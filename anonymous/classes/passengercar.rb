@@ -7,6 +7,10 @@ class PassengerCar < RailCar
     validate!
   end
 
+  def load!
+    super(1)
+  end
+
   def coupled!(train)
     super if train.instance_of? PassengerTrain
   end
