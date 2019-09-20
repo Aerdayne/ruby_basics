@@ -13,27 +13,29 @@ class RouteCreator < Creator
     @routes = []
   end
 
+  protected
+
   def new_route
     puts 'Select the end-stations, first being the departure and second the destination:'
-    departure = select_object(@creator.stationcreator.stations, 'station', &@creator.output_formats[:station_output])
-    destination = select_object(@creator.stationcreator.stations, 'station', &@creator.output_formats[:station_output])
-    @routes << Route.new(departure, destination) unless [departure, destination].any?(&:nil?)
+    departure = select_object(@creator.stationcreator.stations, 'station', &@creator.output[:station])
+    destination = select_object(@creator.stationcreator.stations, 'station', &@creator.output[:station])
+    @routes << Route.new(departure, destination)
   end
 
   def list_routes
     puts "\nRoutes list:"
-    list_objects(@routes, 'route', &@creator.output_formats[:route_output])
+    list_objects(@routes, 'route', &@creator.output[:route])
   end
 
   def add_station
-    route = select_object(@routes, 'route', &@creator.output_formats[:route_output])
-    station = select_object(@creator.stationcreator.stations, 'station', &@creator.output_formats[:station_output])
+    route = select_object(@routes, 'route', &@creator.output[:route])
+    station = select_object(@creator.stationcreator.stations, 'station', &@creator.output[:station])
     route.add_intermediate! station
   end
 
   def remove_station
-    route = select_object(@routes, 'route', &@creator.output_formats[:route_output])
-    station = select_object(route.stations, 'station', &@creator.output_formats[:station_output])
-    route.remove_intermediate! station
+    route = select_object(@routes, 'route', &@creator.output[:route])
+    station = select_object(route.stations, 'station', &@creator.output[:station])
+    raise CustomException, 'Can not remove an end-station!' unless route.remove_intermediate! station
   end
 end

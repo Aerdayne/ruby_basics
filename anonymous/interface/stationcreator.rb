@@ -11,6 +11,8 @@ class StationCreator < Creator
     @stations = []
   end
 
+  protected
+
   def new_station
     puts 'Enter the station name, length should be at least 3 symbols long:'
     input = gets.chomp
@@ -19,6 +21,6 @@ class StationCreator < Creator
 
   def list_stations
     puts 'Stations list:'
-    list_objects(@stations, 'station', &@creator.output_formats[:station_output])
+    list_objects(@stations, 'station', &@creator.output[:station])
   end
 end

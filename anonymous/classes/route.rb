@@ -26,19 +26,15 @@ class Route
   end
 
   def add_intermediate!(station)
-    return unless station.instance_of?(Station) || @stations.include?(station)
+    return unless station.instance_of?(Station) && !@stations.include?(station)
 
     @stations.insert(-2, station)
   end
 
   def remove_intermediate!(station)
-    return unless station.instance_of?(Station) || [@stations[0], @stations[-1]].include?(station)
+    return unless station.instance_of?(Station) && ![@stations[0], @stations[-1]].include?(station)
 
     @stations.delete(station)
-  end
-
-  def list_route
-    @stations.each_with_index { |station, id| puts '  Station ID: ' + id.to_s + ' Station name: ' + station.name }
   end
 
   protected

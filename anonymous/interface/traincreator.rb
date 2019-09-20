@@ -17,8 +17,10 @@ class TrainCreator < Creator
     @directions = %w[forwards backwards]
   end
 
+  protected
+
   def new_train
-    type = select_object(@train_types, 'type', &@creator.output_formats[:parameter_output])
+    type = select_object(@train_types, 'type', &@creator.output[:parameter])
     puts 'Enter the train ID, format should be XXXXX or XXX-XX:'
     input = gets.chomp
     @trains << type.new(input)
@@ -26,30 +28,30 @@ class TrainCreator < Creator
 
   def list_trains
     puts "\nTrains list:"
-    list_objects(@trains, 'train', &@creator.output_formats[:train_output])
+    list_objects(@trains, 'train', &@creator.output[:train])
   end
 
   def add_cars
-    train = select_object(@trains, 'train', &@creator.output_formats[:train_output])
-    car = select_object(@creator.carcreator.cars, 'car', &@creator.output_formats[:car_output])
-    train.couple! car
+    train = select_object(@trains, 'train', &@creator.output[:train])
+    car = select_object(@creator.carcreator.cars, 'car', &@creator.output[:car])
+    raise CustomException, 'Can not couple cars of a different type!' unless train.couple! car
   end
 
   def remove_cars
-    train = select_object(@trains, 'train', &@creator.output_formats[:train_output])
-    car = select_object(train.cars, 'car', &@creator.output_formats[:car_output])
+    train = select_object(@trains, 'train', &@creator.output[:train])
+    car = select_object(train.cars, 'car', &@creator.output[:car])
     train.decouple! car
   end
 
   def assign_route
-    train = select_object(@trains, 'train', &@creator.output_formats[:train_output])
-    route = select_object(@creator.routecreator.routes, 'route', &@creator.output_formats[:route_output])
+    train = select_object(@trains, 'train', &@creator.output[:train])
+    route = select_object(@creator.routecreator.routes, 'route', &@creator.output[:route])
     train.assign_route! route
   end
 
   def move_train
-    train = select_object(@trains, 'train', &@creator.output_formats[:train_output])
-    direction = select_object(@directions, 'directions', &@creator.output_formats[:parameter_output])
-    train.move! direction
+    train = select_object(@trains, 'train', &@creator.output[:train])
+    direction = select_object(@directions, 'directions', &@creator.output[:parameter])
+    raise CustomException, 'Route is not set, or train is at the end-station!' unless  train.move! direction
   end
 end

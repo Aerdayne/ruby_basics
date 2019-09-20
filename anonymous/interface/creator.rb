@@ -2,7 +2,7 @@
 
 # :nodoc:
 class Creator
-  attr_reader :calls, :output_formats, :traincreator, :carcreator, :stationcreator, :routecreator
+  attr_reader :calls, :output, :traincreator, :carcreator, :stationcreator, :routecreator
 
   def initialize
     @traincreator = TrainCreator.new(self)
@@ -13,27 +13,27 @@ class Creator
                2 => ['Car menu', @carcreator.method(:start)],
                3 => ['Station menu', @stationcreator.method(:start)],
                4 => ['Route menu', @routecreator.method(:start)] }
-    @output_formats =
-      { station_output:
+    @output =
+      { station:
         lambda { |station, id|
           puts "##{id} Station name: #{station.name}"
-          station.traverse(station.trains, &@output_formats[:train_output])
+          station.traverse(station.trains, &@output[:train])
         },
-        train_output:
+        train:
         lambda { |train, id|
           puts "##{id} Train ID: #{train.id} | Train type: #{train.class.name} | Cars attached: #{train.cars.length}"
-          train.traverse(train.cars, &@output_formats[:car_output])
+          train.traverse(train.cars, &@output[:car])
         },
-        car_output:
+        car:
         lambda { |car, id|
-          puts "##{id} Car type: #{car.class.name} | Capacity (total\\occupied): #{car.capacity.join('\\')}"
+          puts "##{id} Car type: #{car.class.name} | Capacity (total\\available): #{[car.volume_total, car.volume_available].join('\\')}"
         },
-        route_output:
+        route:
         lambda { |route, id|
           puts "Route ##{id} | Amount of stations: #{route.stations.length}"
-          route.traverse(route.stations, &@output_formats[:station_output])
+          route.traverse(route.stations, &@output[:station])
         },
-        parameter_output:
+        parameter:
         lambda { |parameter, id|
           puts "#{id} - #{parameter}"
         } }
@@ -58,12 +58,12 @@ class Creator
 
       raise CustomException, 'Invalid action!' unless input.to_i.between?(1, actions.length)
 
-      @calls[input.to_i][1].call
+      puts 'Success!' if @calls[input.to_i][1].call
     end
   end
 
   def select_object(property, type = 'object', &block)
-    raise CustomException, "No #{type}s created!" if property.empty?
+    raise CustomException, "No #{type}s found!" if property.empty?
 
     puts "Choose the #{type}:"
     property.each_with_index { |object, id| block.call(object, id + 1) }
