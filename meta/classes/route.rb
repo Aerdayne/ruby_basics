@@ -1,9 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../modules/instancecounter.rb'
-require_relative '../modules/validation.rb'
-require_relative '../exceptions/customexception.rb'
-
 # :nodoc:
 class Route
   prepend Accessors
@@ -40,5 +36,6 @@ class Route
     return unless station.instance_of?(Station) && ![@stations[0], @stations[-1]].include?(station)
 
     @stations.delete(station)
+    true
   end
 end

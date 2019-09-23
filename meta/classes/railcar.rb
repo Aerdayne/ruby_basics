@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../modules/validation.rb'
-require_relative '../exceptions/customexception.rb'
-
 # :nodoc:
 class RailCar
   prepend Accessors

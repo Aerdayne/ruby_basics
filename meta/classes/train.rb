@@ -1,12 +1,5 @@
 # frozen_string_literal: true
 
-require_relative '../modules/manufacturer.rb'
-require_relative '../modules/instancecounter.rb'
-require_relative '../modules/validation.rb'
-require_relative '../modules/traverser.rb'
-require_relative '../modules/accessors.rb'
-require_relative '../exceptions/customexception.rb'
-
 # :nodoc:
 class Train
   prepend Accessors

@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require_relative './train.rb'
 # :nodoc:
 class CargoTrain < Train
   validate :id, :presence

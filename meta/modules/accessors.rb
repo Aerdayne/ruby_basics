@@ -4,7 +4,7 @@
 module Accessors
   module ClassMethods
     def attr_accessor_with_history(*args)
-      raise CustomException, 'Attr_accessor arguments should be symbols!' unless args.all? { |arg| arg.instance_of? Symbol }
+      raise CustomException, 'Attr_accessor arguments should be symbols!' unless args.all?(Symbol)
 
       args.each do |method|
         define_method(method) do
@@ -14,9 +14,7 @@ module Accessors
           instance_variable_get("@#{method}_history") || instance_variable_set("@#{method}_history", [])
         end
         define_method("#{method}=".to_sym) do |value|
-          instance_variable_set("@#{method}", value)
-          send :"#{method}_history"
-          instance_variable_get("@#{method}_history").push(value)
+          instance_variable_get("@#{method}_history")&.push(instance_variable_set("@#{method}", value))
         end
       end
     end

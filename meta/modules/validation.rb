@@ -9,18 +9,15 @@ module Validation
       raise CustomException, 'Attribute to be validated should be a symbol!' unless [attribute, type].all? { |arg| arg.instance_of? Symbol }
 
       @validators ||= []
-      @validators << [attribute, type, args]
+      @validators << { attribute_name: attribute, validation_call: type, arguments: args }
     end
   end
 
   module InstanceMethods
     def validate!
       self.class.validators.each do |row|
-        attribute = row[0]
-        validation_call = row[1]
-        args = row[2]
-        value = instance_variable_get("@#{row[0]}")
-        Validation.send validation_call, attribute, value, args
+        value = instance_variable_get("@#{row[:attribute_name]}")
+        Validation.send row[:validation_call], row[:attribute_name], value, row[:arguments]
       end
     end
 

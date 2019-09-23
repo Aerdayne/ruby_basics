@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative './railcar.rb'
-require_relative '../modules/validation.rb'
-
 # :nodoc:
 class CargoCar < RailCar
   validate :capacity, :presence
