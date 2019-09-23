@@ -6,15 +6,16 @@ module Accessors
     def attr_accessor_with_history(*args)
       raise CustomException, 'Attr_accessor arguments should be symbols!' unless args.all?(Symbol)
 
-      args.each do |method|
-        define_method(method) do
-          instance_variable_get("@#{method}")
+      args.each do |attr|
+        define_method(attr) do
+          instance_variable_get("@#{attr}")
         end
-        define_method("#{method}_history") do
-          instance_variable_get("@#{method}_history") || instance_variable_set("@#{method}_history", [])
+        define_method("#{attr}_history") do
+          instance_variable_get("@#{attr}_history") || instance_variable_set("@#{attr}_history", [])
         end
-        define_method("#{method}=".to_sym) do |value|
-          instance_variable_get("@#{method}_history")&.push(instance_variable_set("@#{method}", value))
+        define_method("#{attr}=") do |value|
+          instance_variable_get("@#{attr}_history")&.push(instance_variable_get("@#{attr}"))
+          instance_variable_set("@#{attr}", value)
         end
       end
     end

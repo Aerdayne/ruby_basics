@@ -6,7 +6,7 @@ module Validation
     attr_reader :validators
 
     def validate(attribute, type, *args)
-      raise CustomException, 'Attribute to be validated should be a symbol!' unless [attribute, type].all? { |arg| arg.instance_of? Symbol }
+      raise CustomException, 'Attribute to be validated should be a symbol!' unless [attribute, type].all?(Symbol)
 
       @validators ||= []
       @validators << { attribute_name: attribute, validation_call: type, arguments: args }
@@ -55,7 +55,7 @@ module Validation
     end
 
     def route_validity(attribute, value, *_args)
-      raise CustomException, "Route #{attribute} should consist of stations!" unless value.all? { |station| station.instance_of? Station }
+      raise CustomException, "Route #{attribute} should consist of stations!" unless value.all?(Station)
       raise CustomException, 'Route departure and destination can not be the same!' if value[0] == value[-1]
     end
   end

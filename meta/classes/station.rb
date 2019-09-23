@@ -27,10 +27,6 @@ class Station
     @@stations
   end
 
-  def list_specific(type)
-    @trains.select { |train| train.instance_of? type }
-  end
-
   def host!(train)
     return unless train&.current == self
 
