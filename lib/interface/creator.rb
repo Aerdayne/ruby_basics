@@ -21,17 +21,21 @@ class Creator
         },
         train:
         lambda { |train, id|
-          puts "##{id} Train ID: #{train.id} | Train type: #{train.class.name} | Cars attached: #{train.cars.length}"
+          puts "##{id} Train ID: #{train.id} | Train type: #{train.class.name.gsub(/(?<=[a-z])(?=[A-Z])/, ' ')} | Cars attached: #{train.cars.length}"
           train.traverse(train.cars, &@output[:car])
         },
         car:
         lambda { |car, id|
-          puts "##{id} Car type: #{car.class.name} | Capacity (total\\available): #{[car.volume_total, car.volume_available].join('\\')}"
+          puts "##{id} Car type: #{car.class.name.gsub(/(?<=[a-z])(?=[A-Z])/, ' ')} | Capacity (total\\available): #{[car.volume_total, car.volume_available].join('\\')}"
         },
         route:
         lambda { |route, id|
           puts "Route ##{id} | Amount of stations: #{route.stations.length}"
           route.traverse(route.stations, &@output[:station])
+        },
+        type:
+        lambda { |type, id|
+          puts "#{id} - #{type.name.gsub(/(?<=[a-z])(?=[A-Z])/, ' ')}"
         },
         parameter:
         lambda { |parameter, id|
@@ -52,9 +56,11 @@ class Creator
       actions.each do |key, value|
         puts "#{key.to_i} - #{value[0]}"
       end
-      puts "To go back to the previous menu or exit, type 'back'"
+      puts "To go back to the previous menu type 'back', to quit - 'exit'"
       input = gets.chomp
       break if input == 'back'
+
+      exit if input == 'exit'
 
       unless input.to_i.between?(1, actions.length)
         raise CustomException, 'Invalid action!'

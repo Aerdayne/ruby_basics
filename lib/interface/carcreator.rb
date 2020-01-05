@@ -14,9 +14,13 @@ class CarCreator < Creator
   end
 
   def new_car
-    type = select_object(@car_types, 'type', &@creator.output[:parameter])
+    type = select_object(@car_types, 'type', &@creator.output[:type])
     puts 'Enter the volume/seat capacity (or press ENTER to set the default value):'
     input = gets.chomp
+    unless input =~ /^-?[0-9]+$/
+      raise CustomException, "Capacity should be numeric!"
+    end
+
     @cars << if input.empty?
                type.new
              else

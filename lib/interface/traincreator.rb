@@ -20,7 +20,7 @@ class TrainCreator < Creator
   protected
 
   def new_train
-    type = select_object(@train_types, 'type', &@creator.output[:parameter])
+    type = select_object(@train_types, 'type', &@creator.output[:type])
     puts 'Enter the train ID, format should be XXXXX or XXX-XX:'
     input = gets.chomp
     @trains << type.new(input)

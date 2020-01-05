@@ -46,9 +46,9 @@ module Validation
     end
 
     def type(attribute, value, args)
-      type = args[0]
-      unless value.instance_of? type
-        raise CustomException, "#{attribute} can only be a #{type}!"
+      klass = args[0]
+      unless value.instance_of? klass
+        raise CustomException, "#{attribute} can only be a #{klass}!"
       end
     end
 
